@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>House Price</title>
+        <!link rel="stylesheet" href="style.css" type="text/css">
+    </head>
+    <body>
+        
+        <div class="main">
+            <div class="price">
+                <h2>Calculate House Price Here</h2>
+                
+                <form action="/predict" method="POST">
+                    <label> House Age </label>
+                    <br>
+                    <input type="text" size="40" name="house_age" id="house_age" placeholder="Enter age of the house between 0 to 40" >
+                    <br><br>                 
+
+                    <label>  Distance to the nearest MRT station  </label>
+                    <br>
+                    <input type="text" size="40" name="distance" id="distance" placeholder="Enter distance between 0 to 4000">
+                    <br><br>    
+
+                                  
+                    <label for="stores">Number of convenience stores(between 0 and 10):</label>
+                    <br>
+                    <input type="text" size="40" id="stores" name="stores" min="0" max="10">
+                    <br><br>
+
+
+                    <label>  Latitude  </label>
+                    <br>
+                    <input type="text" size="40" name="latitude" id="latitude" placeholder="Enter latitude between 24.933 to 25.014">
+                    <br><br>   
+
+                    <label>  Longitude  </label>
+                    <br>
+                    <input type="text" size="40" name="longitude" id="longitude" placeholder="Enter longitude between 121.474 to 121.566 ">
+                    <br><br>   
+
+
+                    <button type="submit">Calculate House Price</button>
+                    <br><br><br>
+                    {{price_result}}
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

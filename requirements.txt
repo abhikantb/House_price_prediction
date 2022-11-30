@@ -1,0 +1,8 @@
+Flask
+sklearn==1.0.2
+pandas
+numpy
+matplotlib
+seaborn
+category_encoders
+gunicorn==19.7.x
