@@ -1,0 +1,77 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+# More info on Python, GitHub Actions, and Azure Functions: https://aka.ms/python-webapps-actions
+
+name: HouseUnitPrice
+
+on:
+
+  workflow_dispatch:
+    inputs:
+      # This is the path of your Azure Function in Git.  
+      GIT_App_Name:
+        description: 'Provide the Azure App Name '
+        required: true
+        default: 'HouseUnitPrice'
+        
+      GIT_App_URL:
+        description: 'Provide the Azure App URL'
+        required: true
+        default: 'https://houseunitprice.azurewebsites.net'
+        
+       # This is the path of your app in Git.
+      GIT_App_PATH:
+        description: 'Relative path for app'
+        required: true
+        default: '/House_price_prediction'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      AZURE_APP_PACKAGE_PATH: ${{ github.workspace }}/${{ github.event.inputs.GIT_App_PATH }} # set this to the path to your web app project, defaults to the repository root
+      PYTHON_VERSION: '3.10' # set this to the python version to use (supports 3.6, 3.7, 3.8)
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Python version
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      #Install All the Required Depenedent Modules
+      - name: Install dependencies
+        run: |
+          pushd $GITHUB_WORKSPACE/${{ github.event.inputs.GIT_App_PATH }}
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          popd
+        
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-app
+          path: |
+            ${{ github.workspace }}/${{ github.event.inputs.GIT_App_PATH }}
+            !venv/
+  Deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ github.event.inputs.GIT_App_URL }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: python-app
+          path: ${{ github.workspace }}/${{ github.event.inputs.GIT_App_PATH }}
+
+      - name: 'Deploy to Azure Functions'
+        uses: Azure/functions-action@v2
+        id: deploy-to-function
+        with:
+          app-name: ${{ github.event.inputs.GIT_App_Name }}
+          package: ${{ github.workspace }}/${{ github.event.inputs.GIT_App_PATH }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
